@@ -74,6 +74,21 @@ h1 {
     background-color: #218838;
 }
 
+.button-danger {
+    padding: 8px 15px;
+    border: none;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button-danger:hover {
+    background-color: #c82333;
+}
+
 h2 {
     color: #4a4a4a;
     border-bottom: 2px solid #f4f4f9;
