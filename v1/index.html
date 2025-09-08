@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>签到系统</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>签到系统</h1>
+        <div class="signin-form">
+            <input type="text" id="nameInput" placeholder="请输入您的姓名">
+            <button id="signInButton">签到</button>
+        </div>
+        <div class="export-container">
+            <button id="exportButton">导出为 CSV</button>
+        </div>
+        <div class="records-container">
+            <h2>签到记录</h2>
+            <ul id="recordList"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
