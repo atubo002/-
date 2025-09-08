@@ -27,20 +27,20 @@ h1 {
 
 .signin-form {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    gap: 15px;
     margin-bottom: 20px;
 }
 
-#nameInput {
-    flex-grow: 1;
-    padding: 10px;
+#nameInput, #orgInput, #phoneInput {
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
 }
 
 #signInButton {
-    padding: 10px 20px;
+    padding: 12px 20px;
     border: none;
     background-color: #007bff;
     color: white;
@@ -85,18 +85,28 @@ h2 {
     margin-top: 20px;
 }
 
+.record-header {
+    display: flex;
+    background-color: #f8f9fa;
+    padding: 10px 15px;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: bold;
+    border-radius: 4px 4px 0 0;
+}
+
 #recordList {
     list-style-type: none;
     padding: 0;
     margin: 0;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
 }
 
 #recordList li {
-    background-color: #f9f9f9;
+    display: flex;
     padding: 15px;
     border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
     align-items: center;
 }
 
@@ -104,8 +114,16 @@ h2 {
     border-bottom: none;
 }
 
-.record-name {
-    font-weight: bold;
+.record-name, .record-header .record-name { flex: 1.5; }
+.record-org, .record-header .record-org { flex: 2; }
+.record-phone, .record-header .record-phone { flex: 2; }
+.record-time, .record-header .record-time { flex: 2.5; text-align: right; }
+
+.record-name, .record-org, .record-phone, .record-time {
+    padding: 0 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .record-time {

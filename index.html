@@ -10,7 +10,9 @@
     <div class="container">
         <h1>签到系统</h1>
         <div class="signin-form">
-            <input type="text" id="nameInput" placeholder="请输入您的姓名">
+            <input type="text" id="nameInput" placeholder="请输入您的姓名" required>
+            <input type="text" id="orgInput" placeholder="请输入您的单位" required>
+            <input type="tel" id="phoneInput" placeholder="请输入您的手机号" required>
             <button id="signInButton">签到</button>
         </div>
         <div class="export-container">
@@ -18,6 +20,12 @@
         </div>
         <div class="records-container">
             <h2>签到记录</h2>
+            <div class="record-header">
+                <span class="record-name">姓名</span>
+                <span class="record-org">单位</span>
+                <span class="record-phone">手机号</span>
+                <span class="record-time">签到时间</span>
+            </div>
             <ul id="recordList"></ul>
         </div>
     </div>
