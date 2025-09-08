@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const phoneInput = document.getElementById('phoneInput');
     const signInButton = document.getElementById('signInButton');
     const exportButton = document.getElementById('exportButton');
+    const resetButton = document.getElementById('resetButton');
     const recordList = document.getElementById('recordList');
     const recordsCollection = db.collection('records');
 
@@ -101,5 +102,46 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('导出失败，请稍后重试。');
         });
     });
+
+// 重置按钮点击事件
+resetButton.addEventListener('click', () => {
+    if (!confirm('您确定要重置所有签到记录吗？此操作不可恢复！')) {
+        return;
+    }
+
+    // 暂时禁用所有按钮，防止重复操作
+    signInButton.disabled = true;
+    exportButton.disabled = true;
+    resetButton.disabled = true;
+
+    recordsCollection.get().then(snapshot => {
+        if (snapshot.empty) {
+            alert('没有记录可重置。');
+            return;
+        }
+
+        // 使用批量操作来删除所有文档
+        const batch = db.batch();
+        snapshot.docs.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+
+        return batch.commit();
+    }).then(() => {
+        console.log('所有记录已成功删除。');
+        alert('所有签到记录已成功重置。');
+    }).catch(error => {
+        console.error("重置失败: ", error);
+        alert('重置失败，请稍后重试。');
+    }).finally(() => {
+        // 无论成功或失败，都重新启用按钮
+        signInButton.disabled = false;
+        exportButton.disabled = false;
+        resetButton.disabled = false;
+    });
+});
+
+
+
 });
 
