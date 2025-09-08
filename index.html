@@ -22,5 +22,22 @@
         </div>
     </div>
     <script src="script.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoBSe4XQjff3VbC5zYNZUiAADszRdcMMU",
+            authDomain: "signin-system-sste.firebaseapp.com",
+            projectId: "signin-system-sste",
+            storageBucket: "signin-system-sste.appspot.com",
+            messagingSenderId: "117001321969",
+            appId: "1:117001321969:web:da822d22bd20c91c1ad850"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
 </body>
 </html>

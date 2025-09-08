@@ -3,15 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const signInButton = document.getElementById('signInButton');
     const exportButton = document.getElementById('exportButton');
     const recordList = document.getElementById('recordList');
-
-    // 从 localStorage 加载记录
-    const loadRecords = () => {
-        const records = JSON.parse(localStorage.getItem('signInRecords')) || [];
-        recordList.innerHTML = '';
-        records.forEach(record => {
-            addRecordToList(record);
-        });
-    };
+    const recordsCollection = db.collection('records');
 
     // 将记录添加到列表
     const addRecordToList = (record) => {
@@ -23,12 +15,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const timeSpan = document.createElement('span');
         timeSpan.className = 'record-time';
-        timeSpan.textContent = record.time;
+        // Firestore 时间戳需要转换
+        const time = record.time.toDate ? record.time.toDate().toLocaleString('zh-CN') : record.time;
+        timeSpan.textContent = time;
 
         li.appendChild(nameSpan);
         li.appendChild(timeSpan);
-        recordList.appendChild(li);
+        // 将新记录添加到列表顶部
+        recordList.prepend(li);
     };
+
+    // 从 Firestore 实时加载并监听记录变化
+    recordsCollection.orderBy('time', 'desc').onSnapshot(snapshot => {
+        recordList.innerHTML = ''; // 清空现有列表
+        snapshot.forEach(doc => {
+            const record = doc.data();
+            const li = document.createElement('li');
+        
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'record-name';
+            nameSpan.textContent = record.name;
+
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'record-time';
+            const time = record.time.toDate ? record.time.toDate().toLocaleString('zh-CN') : record.time;
+            timeSpan.textContent = time;
+
+            li.appendChild(nameSpan);
+            li.appendChild(timeSpan);
+            recordList.appendChild(li);
+        });
+    });
+
 
     // 签到按钮点击事件
     signInButton.addEventListener('click', () => {
@@ -41,42 +59,48 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const record = {
             name: name,
-            time: now.toLocaleString('zh-CN')
+            time: firebase.firestore.Timestamp.fromDate(now) // 使用 Firestore 时间戳
         };
 
-        const records = JSON.parse(localStorage.getItem('signInRecords')) || [];
-        records.push(record);
-        localStorage.setItem('signInRecords', JSON.stringify(records));
-
-        addRecordToList(record);
-        nameInput.value = '';
+        recordsCollection.add(record).then(() => {
+            console.log('签到成功！');
+            nameInput.value = '';
+        }).catch(error => {
+            console.error('签到失败: ', error);
+            alert('签到失败，请检查网络或稍后重试。');
+        });
     });
 
     // 导出为 CSV
     exportButton.addEventListener('click', () => {
-        const records = JSON.parse(localStorage.getItem('signInRecords')) || [];
-        if (records.length === 0) {
-            alert('没有签到记录可导出。');
-            return;
-        }
+        recordsCollection.orderBy('time', 'asc').get().then(snapshot => {
+            if (snapshot.empty) {
+                alert('没有签到记录可导出。');
+                return;
+            }
 
-        let csvContent = 'data:text/csv;charset=utf-8,\uFEFF'; // 添加 BOM 以支持 Excel
-        csvContent += '姓名,签到时间\n'; // CSV header
+            let csvContent = 'data:text/csv;charset=utf-8,\uFEFF'; // 添加 BOM 以支持 Excel
+            csvContent += '姓名,签到时间\n'; // CSV header
 
-        records.forEach(record => {
-            csvContent += `${record.name},"${record.time}"\n`;
+            snapshot.forEach(doc => {
+                const record = doc.data();
+                const time = record.time.toDate ? record.time.toDate().toLocaleString('zh-CN') : record.time;
+                csvContent += `${record.name},"${time}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'signin_records.csv');
+            document.body.appendChild(link);
+
+            link.click();
+            document.body.removeChild(link);
+
+        }).catch(error => {
+            console.error("导出失败: ", error);
+            alert('导出失败，请稍后重试。');
         });
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement('a');
-        link.setAttribute('href', encodedUri);
-        link.setAttribute('download', 'signin_records.csv');
-        document.body.appendChild(link);
-
-        link.click();
-        document.body.removeChild(link);
     });
-
-    // 初始加载
-    loadRecords();
 });
+
